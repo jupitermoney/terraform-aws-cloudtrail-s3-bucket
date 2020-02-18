@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "default" {
 
     principals {
       type        = "Service"
-      identifiers = ["config.amazonaws.com", "cloudtrail.amazonaws.com"]
+      identifiers = ["config.amazonaws.com", "cloudtrail.amazonaws.com", "ssm.amazonaws.com", "config-multiaccountsetup.amazonaws.com"]
     }
 
     actions = [
