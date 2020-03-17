@@ -10,6 +10,7 @@ module "label" {
   tags        = var.tags
 }
 
+
 data "aws_iam_policy_document" "default" {
   count = var.enabled ? 1 : 0
 
@@ -18,7 +19,7 @@ data "aws_iam_policy_document" "default" {
 
     principals {
       type        = "Service"
-      identifiers = ["cloudtrail.amazonaws.com", "guardduty.amazonaws.com", "config-multiaccountsetup.amazonaws.com", "config.amazonaws.com", "ssm.amazonaws.com"]
+      identifiers = ["cloudtrail.amazonaws.com"]
     }
 
     actions = [
@@ -26,65 +27,7 @@ data "aws_iam_policy_document" "default" {
     ]
 
     resources = [
-      "arn:aws:s3:::${module.label.id}"
-    ]
-  }
-
-  statement {
-    sid = "AWSLogDeliveryWrite"
-
-    principals {
-      type        = "Service"
-      identifiers = ["delivery.logs.amazonaws.com"]
-    }
-    actions = [
-      "s3:PutObject",
-    ]
-    resources = [
-      "arn:aws:s3:::${module.label.id}/AWSLogs/829025274556/*"
-     ]
-
-    condition {
-    test     = "StringEquals"
-    variable = "s3:x-amz-acl"
-
-    values = [
-      "bucket-owner-full-control"
-    ]
-    }
-  }
-
-  statement {
-    sid = "AWSLogDeliveryAclCheck"
-
-    principals {
-      type        = "Service"
-      identifiers = ["delivery.logs.amazonaws.com"]
-    }
-
-    actions = [
-      "s3:GetBucketAcl",
-    ]
-
-    resources = [
-      "arn:aws:s3:::${module.label.id}"
-     ]
-    }
-
-  statement {
-    sid = "Allow GetBucketLocation"
-
-    principals {
-      type        = "Service"
-      identifiers = ["guardduty.amazonaws.com"]
-    }
-
-    actions = [
-      "s3:GetBucketLocation",
-    ]
-
-    resources = [
-      "arn:aws:s3:::${module.label.id}"
+      "arn:aws:s3:::${module.label.id}",
     ]
   }
 
@@ -93,15 +36,15 @@ data "aws_iam_policy_document" "default" {
 
     principals {
       type        = "Service"
-      identifiers = ["config.amazonaws.com", "guardduty.amazonaws.com", "cloudtrail.amazonaws.com", "ssm.amazonaws.com", "config-multiaccountsetup.amazonaws.com"]
+      identifiers = ["config.amazonaws.com", "cloudtrail.amazonaws.com", "ssm.amazonaws.com", "config-multiaccountsetup.amazonaws.com"]
     }
 
     actions = [
-      "s3:PutObject"
+      "s3:PutObject",
     ]
 
     resources = [
-      "arn:aws:s3:::${module.label.id}/*"
+      "arn:aws:s3:::${module.label.id}/*",
     ]
 
     condition {
@@ -109,11 +52,12 @@ data "aws_iam_policy_document" "default" {
       variable = "s3:x-amz-acl"
 
       values = [
-        "bucket-owner-full-control"
+        "bucket-owner-full-control",
       ]
     }
   }
 }
+
 
 module "s3_bucket" {
   source                             = "git::https://github.com/cloudposse/terraform-aws-s3-log-storage.git?ref=tags/0.7.0"
